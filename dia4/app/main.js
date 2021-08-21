@@ -14,48 +14,15 @@ async function getCars() {
     return
   }
 
-  data.forEach(car => {
-    insertRowOfCar(car.image, car.brandModel, car.year, car.plate, car.color)
-  })
-  verifyIfTableIsEmpty()
-}
+  if (data.length === 0) {
+    const td = document.querySelector('[data-js = "table_error"]')
+    td.innerText = 'Nenhum carro encontrado'
+  } else {
+    td.style.display = 'none'
 
-async function postCars(image, brandModel, year, plate, color) {
-  try {
-    const response = await fetch(URL, {
-      method: 'POST',
-      body: JSON.stringify({
-        image,
-        brandModel,
-        year,
-        plate,
-        color
-      }),
-      headers: { 'Content-Type': 'application/json' }
+    data.forEach(car => {
+      insertRowOfCar(car.image, car.brandModel, car.year, car.plate, car.color)
     })
-
-    const span = document.querySelector('[data-js = "span_error"]')
-
-    if (response.ok) {
-      insertRowOfCar(image, brandModel, year, plate, color)
-      verifyIfTableIsEmpty()
-      
-      span.style.color = '#00a000'
-      span.innerHTML = `<b>SUCESSO:</b> Informações inseridas corretamente.`
-    } else {
-      const span = document.querySelector('[data-js = "span_error"]')
-      span.style.color = '#900020'
-
-      if(image === '' || brandModel === '' || year === '' || plate === '' || color === '') {
-        span.innerHTML = `<b>ERRO:</b> Algum campo ficou em branco.`
-      } else {
-        span.innerHTML = `<b>ERRO:</b> Você não pode cadastrar uma placa que já está cadastrada.`
-      }
-    }
-
-  } catch (error) {
-    console.log('Erro: POST carros')
-    return
   }
 }
 
@@ -73,7 +40,7 @@ form.addEventListener('submit', (e) => {
   const plate = e.target.elements['plate']
   const color = e.target.elements['color']
 
-  postCars(image.value, brand.value, year.value, plate.value, color.value)
+  insertRowOfCar(image, brand, year, plate, color)
 
   image.value = ''
   brand.value = ''
@@ -88,15 +55,15 @@ function insertRowOfCar(image, brand, year, plate, color) {
   const tr = document.createElement('tr')
 
   const tdImage = document.createElement('td')
-  tdImage.innerText = image
+  tdImage.innerText = image.value
   const tdBrand = document.createElement('td')
-  tdBrand.innerText = brand
+  tdBrand.innerText = brand.value
   const tdYear = document.createElement('td')
-  tdYear.innerText = year
+  tdYear.innerText = year.value
   const tdPlate = document.createElement('td')
-  tdPlate.innerText = plate
+  tdPlate.innerText = plate.value
   const tdColor = document.createElement('td')
-  tdColor.innerText = color
+  tdColor.innerText = color.value
 
   tr.appendChild(tdImage)
   tr.appendChild(tdBrand)
@@ -107,15 +74,4 @@ function insertRowOfCar(image, brand, year, plate, color) {
   table.appendChild(tr)
 }
 
-function verifyIfTableIsEmpty() {
-  const td = document.querySelector('[data-js = "table_error"]')
 
-  if (table.childElementCount <= 1) {
-    td.innerText = 'Nenhum carro encontrado'
-    td.style.display = ''
-    return 1
-  } else {
-    td.style.display = 'none'
-    return 0
-  }
-}
