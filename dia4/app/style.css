@@ -6,3 +6,15 @@ body {
   color: #2c3e50;
   margin-top: 60px;
 }
+
+table {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  border: 2px solid gray;
+}
+
+th {
+  color: blue
+}
