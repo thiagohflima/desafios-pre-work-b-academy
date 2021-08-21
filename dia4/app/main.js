@@ -10,17 +10,31 @@ async function getCars() {
     data = await response.json()
   }
   catch (error) {
-    console.log('Erro: GET carros')
+    console.log('Erro: GET carros: ', error)
     return
   }
 
-  data.forEach(car => {
-    insertRowOfCar(car.image, car.brandModel, car.year, car.plate, car.color)
-  })
-  verifyIfTableIsEmpty()
+  await manageButtons(data)
+
 }
 
-async function postCars(image, brandModel, year, plate, color) {
+async function deleteCar(plate) {
+  try {
+    const response = await fetch(URL, {
+      method: 'DELETE',
+      body: JSON.stringify({
+        plate
+      }),
+      headers: { 'Content-Type': 'application/json' }
+    })
+
+  } catch (error) {
+    console.log('Erro: DELETE carros: ', error)
+    return
+  }
+}
+
+async function postCar(image, brandModel, year, plate, color) {
   try {
     const response = await fetch(URL, {
       method: 'POST',
@@ -37,8 +51,13 @@ async function postCars(image, brandModel, year, plate, color) {
     const span = document.querySelector('[data-js = "span_error"]')
 
     if (response.ok) {
-      insertRowOfCar(image, brandModel, year, plate, color)
-      verifyIfTableIsEmpty()
+
+      let data = []
+      data.push({
+        image, brandModel, year, plate, color
+      })
+
+      await manageButtons(data)
 
       span.style.color = '#00a000'
       span.innerHTML = `<b>SUCESSO:</b> Informações inseridas corretamente.`
@@ -46,7 +65,7 @@ async function postCars(image, brandModel, year, plate, color) {
       const span = document.querySelector('[data-js = "span_error"]')
       span.style.color = '#900020'
 
-      if(image === '' || brandModel === '' || year === '' || plate === '' || color === '') {
+      if (image === '' || brandModel === '' || year === '' || plate === '' || color === '') {
         span.innerHTML = `<b>ERRO:</b> Algum campo ficou em branco.`
       } else {
         span.innerHTML = `<b>ERRO:</b> Você não pode cadastrar uma placa que já está cadastrada.`
@@ -54,7 +73,7 @@ async function postCars(image, brandModel, year, plate, color) {
     }
 
   } catch (error) {
-    console.log('Erro: POST carros')
+    console.log('Erro: POST carros: ', error)
     return
   }
 }
@@ -73,7 +92,7 @@ form.addEventListener('submit', (e) => {
   const plate = e.target.elements['plate']
   const color = e.target.elements['color']
 
-  postCars(image.value, brand.value, year.value, plate.value, color.value)
+  postCar(image.value, brand.value, year.value, plate.value, color.value)
 
   image.value = ''
   brand.value = ''
@@ -97,14 +116,23 @@ function insertRowOfCar(image, brand, year, plate, color) {
   tdPlate.innerText = plate
   const tdColor = document.createElement('td')
   tdColor.innerText = color
+  const tdButton = document.createElement('td')
+  const button = document.createElement('button')
+  button.innerText = 'Excluir'
+  button.setAttribute('data-js', 'button_delete')
+  button.setAttribute('data-plate', plate)
+  tdButton.appendChild(button)
 
   tr.appendChild(tdImage)
   tr.appendChild(tdBrand)
   tr.appendChild(tdYear)
   tr.appendChild(tdPlate)
   tr.appendChild(tdColor)
+  tr.appendChild(tdButton)
 
   table.appendChild(tr)
+
+  return document.querySelectorAll('[data-js = "button_delete"]')
 }
 
 function verifyIfTableIsEmpty() {
@@ -118,4 +146,24 @@ function verifyIfTableIsEmpty() {
     td.style.display = 'none'
     return 0
   }
+}
+
+async function manageButtons(data) {
+  let allButtons
+  let i = 0
+
+  data.forEach(car => {
+
+    allButtons = insertRowOfCar(car.image, car.brandModel, car.year, car.plate, car.color)
+    if (++i === data.length) {
+      allButtons.forEach((row) => row.addEventListener('click', e => {
+        const plate = e.target.getAttribute('data-plate')
+        deleteCar(plate)
+        e.target.parentNode.parentNode.remove()
+      }))
+    }
+
+  })
+
+  verifyIfTableIsEmpty()
 }
