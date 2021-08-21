@@ -1,12 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dia 4</title>
-  </head>
-  <body>
-    <script type="module" src="/main.js"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dia 4</title>
+</head>
+
+<body>
+  <form data-js="form_cars">
+    <h1>Form Carros</h1>
+
+    <label for="image">Imagem (URL)</label>
+    <input type="text" id="image" name="image">
+
+    <label for="brand">Marca / Modelo</label>
+    <input type="text" id="brand" name="brand">
+
+    <label for="year">Ano</label>
+    <input type="number" id="year" name="year">
+
+    <label for="plate">Placa</label>
+    <input type="text" id="plate" name="plate">
+
+    <label for="color">Cor</label>
+    <input type="color" id="color" name="color">
+
+    <button type="submit">Cadastrar</button>
+  </form>
+
+  <table border=2>
+    <thead>
+      <th>Imagem</th>
+      <th>Marca / Modelo</th>
+      <th>Ano</th>
+      <th>Placa</th>
+      <th>Cor</th>
+    </thead>
+    <tbody data-js="table"></tbody>
+  </table>
+
+  <script type="module" src="/main.js"></script>
+</body>
+
 </html>
